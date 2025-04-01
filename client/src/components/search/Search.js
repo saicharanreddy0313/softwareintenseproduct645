@@ -57,7 +57,7 @@ const Search = () => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search products (e.g., 'Tesla' or 'QNX')"
+          placeholder="Search products (e.g., 'Toyota' or 'Honda')"
           onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
         />
         <button onClick={handleSearch} disabled={loading}>
