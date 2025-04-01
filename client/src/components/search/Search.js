@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../../services/supabaseClient';
-import '../../styles/search.css';
+import '../../styles/Search.css';
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +22,7 @@ const Search = () => {
       console.log(searchTerm);
       // Supabase query with OR for multiple column searches
       const { data, error: sbError } = await supabase
-        .from('products')
+        .from('cars')
         .select(`
           Id,
           name,
