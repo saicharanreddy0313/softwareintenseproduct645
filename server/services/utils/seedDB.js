@@ -1,6 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const SIP = require('../../models/SIP');
+const SIP = require('../../models');
 
 const sampleProducts = [
   {
