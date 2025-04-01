@@ -11,19 +11,19 @@ const categories = [
     id: 1,
     name: 'Cars',
     description: 'Automotive Sector Details',
-    imageUrl: '/images/cars-category.jpg'
+    imageUrl: '/cars-category.jpg'
   },
   {
     id: 2,
     name: 'Wearables',
     description: 'Biometric trackers and augmented reality wearables',
-    imageUrl: '/images/wearables-category.jpg'
+    imageUrl: '/wearables-category.jpg'
   },
   {
     id: 3,
     name: 'Apparel',
     description: 'IoT-enabled clothing with health monitoring',
-    imageUrl: '/images/apparel-category.jpg'
+    imageUrl: '/apparel-category.jpg'
   }
   // Removed Home & Office category
 ];
