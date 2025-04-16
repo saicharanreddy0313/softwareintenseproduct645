@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import CategoryCard from '../../components/CategoryCard/CategoryCard'; 
 import '../../styles/Home.css';
+import Header from '../../components/Header/Header';
 
 const categories = [
   {
@@ -34,7 +35,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      {/* User Icon Container */}
+      <Header /> {/* Add Header here */}
       <div className="user-icon-container">
         <div className="user-icon" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
           <FaUserCircle size={32} />

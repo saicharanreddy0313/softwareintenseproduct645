@@ -1,9 +1,9 @@
-// pages/Profile/Profile.js
-import { useState} from 'react';
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../services/supabaseClient';
 import { Link } from 'react-router-dom';
 import '../../styles/Profile.css';
+import Header from '../../components/Header/Header';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
@@ -75,85 +75,91 @@ export default function Profile() {
   };
 
   return (
-    <div className="profile-container">
-      <div className="profile-header">
-        <h2>Profile Settings</h2>
-        <div className="profile-actions">
-          <Link to="/home" className="home-btn">
-            Go to Home
-          </Link>
-          <button 
-            className={`edit-btn ${editMode ? 'cancel' : ''}`}
-            onClick={() => setEditMode(!editMode)}
-          >
-            {editMode ? 'Cancel' : 'Edit Profile'}
-          </button>
-        </div>
-</div>
-
-      <form onSubmit={handleSubmit} className="profile-form">
-        <div className="avatar-upload">
-          <div className="avatar-preview">
-            <img 
-              src={avatarUrl || 'https://via.placeholder.com/150'} 
-              alt="Avatar" 
-            />
-            {editMode && (
-              <label className="upload-overlay">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  disabled={loading}
-                />
-                {loading ? 'Uploading...' : 'Change Photo'}
-              </label>
-            )}
+    <>
+      <Header />
+      <div className="profile-container">
+        <div className="profile-header">
+          <h2>Profile Settings</h2>
+          <div className="profile-actions">
+            <Link to="/home" className="home-btn">
+              Go to Home
+            </Link>
+            <button 
+              className={`edit-btn ${editMode ? 'cancel' : ''}`}
+              onClick={() => setEditMode(!editMode)}
+              type="button"
+            >
+              {editMode ? 'Cancel' : 'Edit Profile'}
+            </button>
           </div>
         </div>
 
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            value={user?.email}
-            disabled
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="profile-form">
+          <div className="avatar-upload">
+            <div className="avatar-preview">
+              <img 
+                src={avatarUrl || 'https://via.placeholder.com/150'} 
+                alt="Avatar" 
+              />
+              {editMode && (
+                <label className="upload-overlay">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    disabled={loading}
+                  />
+                  {loading ? 'Uploading...' : 'Change Photo'}
+                </label>
+              )}
+            </div>
+          </div>
 
-        <div className="form-group">
-          <label>Username</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={!editMode}
-          />
-        </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={user?.email}
+              disabled
+            />
+          </div>
 
-        <div className="form-group">
-          <label>Phone Number</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            disabled={!editMode}
-            pattern="[0-9]{10}"
-          />
-        </div>
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={!editMode}
+              placeholder="Enter username"
+            />
+          </div>
 
-        {error && <div className="error-message">{error}</div>}
+          <div className="form-group">
+            <label>Phone Number</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              disabled={!editMode}
+              pattern="[0-9]{10}"
+              placeholder="Enter 10-digit phone number"
+            />
+          </div>
 
-        {editMode && (
-          <button 
-            type="submit" 
-            className="save-btn"
-            disabled={loading}
-          >
-            {loading ? 'Saving...' : 'Save Changes'}
-          </button>
-        )}
-      </form>
-    </div>
+          {error && <div className="error-message">{error}</div>}
+
+          {editMode && (
+            <button 
+              type="submit" 
+              className="save-btn"
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save Changes'}
+            </button>
+          )}
+        </form>
+      </div>
+    </>
   );
 }
