@@ -5,64 +5,115 @@ import '../../styles/Search.css';
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [hasSearched, setHasSearched] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const handleSearch = async () => {
-    setHasSearched(true);
-    if (!searchTerm.trim()) {
-      setError('Please enter a search term');
+  const fetchSuggestions = async (value) => {
+    if (!value.trim()) {
+      setSuggestions([]);
       return;
     }
 
     try {
-      setLoading(true);
-      setError('');
-      console.log(searchTerm);
-      // Supabase query with OR for multiple column searches
+      const { data, error } = await supabase
+        .from('Cars')
+        .select('name')
+        .ilike('name', `%${value}%`)
+        .limit(10);
+
+      if (error) throw error;
+      setSuggestions(data || []);
+    } catch (err) {
+      console.error('Suggestion fetch error:', err);
+    }
+  };
+
+  const handleSearch = async (term) => {
+    if (!term.trim()) return;
+
+    setLoading(true);
+    setError('');
+    try {
       const { data, error: sbError } = await supabase
-        .from('cars')
-        .select(`
-          Id,
-          name,
-          category,
-          manufacturer,
-          versions,
-          operatingSystems
-        `)
+        .from('Cars')
+        .select('Id, name, category, manufacturer, versions, operatingSystems')
         .or(
-          `name.ilike.%${searchTerm}%,` +
-          `category.ilike.%${searchTerm}%,` +
-          `manufacturer.ilike.%${searchTerm}%,` +
-          `operatingSystems.ilike.%${searchTerm}%`
+          `name.ilike.%${term}%,` +
+          `category.ilike.%${term}%,` +
+          `manufacturer.ilike.%${term}%,` +
+          `operatingSystems.ilike.%${term}%`
         );
 
       if (sbError) throw sbError;
-      console.log(data);
       setResults(data || []);
-      
+      setSuggestions([]);
+      setShowSuggestions(false);
     } catch (err) {
-      setError('Error fetching results. Please try again.');
-      console.error('Search error:', err);
+      setError('Error fetching results.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setShowSuggestions(true);
+    fetchSuggestions(value);
+  };
+
+  const handleSuggestionClick = (value) => {
+    setSearchTerm(value);
+    handleSearch(value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(searchTerm);
+      setShowSuggestions(false);
+    }
+  };
+
+  // ⭐ NEW: handleStar function to save into localStorage
+  const handleStar = (sip) => {
+    const stored = JSON.parse(localStorage.getItem('starredSIPs')) || [];
+    const exists = stored.find(item => item.Id === sip.Id);
+    if (!exists) {
+      const updated = [...stored, sip];
+      localStorage.setItem('starredSIPs', JSON.stringify(updated));
+      alert('⭐ SIP starred!');
+    } else {
+      alert('Already starred');
+    }
+  };
+
   return (
     <div className="search-container">
-      <div className="search-input-group">
+      <div className="search-input-wrapper">
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           placeholder="Search products (e.g., 'Toyota' or 'Honda')"
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <button onClick={handleSearch} disabled={loading}>
+        <button onClick={() => handleSearch(searchTerm)} disabled={loading}>
           {loading ? 'Searching...' : 'Search'}
         </button>
+
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="suggestion-dropdown">
+            {suggestions.map((item, index) => (
+              <li key={index} onMouseDown={() => handleSuggestionClick(item.name)}>
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {error && <p className="error-message">{error}</p>}
@@ -70,42 +121,20 @@ const Search = () => {
       <div className="results-grid">
         {results.map((product) => (
           <div key={product.Id} className="product-card">
-            <h3>{product.name}</h3>
+            <div className="card-header">
+              <h3>{product.name}</h3>
+              {/* ⭐ Star button */}
+              <button className="star-btn" onClick={() => handleStar(product)}>⭐</button>
+            </div>
             <div className="product-meta">
-              <span className="category">Category: {product.name}</span>
+              <span className="category">Category: {product.category}</span>
               <span className="manufacturer">Manufacturer: {product.manufacturer}</span>
               <span className="version">Version: {product.versions}</span>
               <span className="os">OS: {product.operatingSystems}</span>
             </div>
-            
-            {product.dependencies?.length > 0 && (
-              <div className="dependencies-list">
-                <strong>Dependencies:</strong>
-                <div className="chips">
-                  {product.dependencies.map((dep, index) => (
-                    <span key={index} className="chip">{dep}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {product.components?.length > 0 && (
-              <div className="components-list">
-                <strong>Components:</strong>
-                <ul>
-                  {product.components.map((component, index) => (
-                    <li key={index} className="break-words">{component}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         ))}
       </div>
-
-      {hasSearched && results.length === 0 && !loading && !error && (
-        <p className="no-results">No products found. Try a different search term.</p>
-      )}
     </div>
   );
 };

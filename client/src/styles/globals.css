@@ -75,3 +75,10 @@ input {
   color: #ff4757;
   margin-right: 4px;
 }
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+  color: #f0f0f0;
+  font-family: 'Segoe UI', sans-serif;
+}
