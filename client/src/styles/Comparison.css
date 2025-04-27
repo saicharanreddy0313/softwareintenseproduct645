@@ -1,63 +1,99 @@
 .comparison-container {
-    padding: 20px;
-    color: #fff;
-    background-color: #121212;
-    min-height: 100vh;
-  }
-  
-  .search-input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .search-input-group input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 6px;
-    background-color: #1f1f1f;
-    color: white;
-    border: 1px solid #444;
-  }
-  
-  .search-input-group button {
-    padding: 10px 20px;
-    background-color: #6a5acd;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .results-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .product-card {
-    background-color: #1f1f1f;
-    padding: 15px;
-    border-radius: 10px;
-    width: 250px;
-    box-shadow: 0 0 8px #00000066;
-  }
-  
-  .product-card.selected {
-    border: 2px solid #6a5acd;
-  }
-  
-  .sip-comparison {
-    display: flex;
-    gap: 30px;
-    margin-top: 30px;
-  }
-  
-  .sip-card {
-    flex: 1;
-    background-color: #1f1f1f;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 8px #00000066;
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #121212;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.search-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.search-input-group {
+  position: relative;
+  width: 300px;
+}
+
+.search-input-group input {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+.search-input-group input::placeholder {
+  color: #888;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  border-radius: 0 0 8px 8px;
+}
+
+.suggestions-list li {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #e0e0e0;
+}
+
+.suggestions-list li:hover {
+  background: #333;
+}
+
+.error-message {
+  text-align: center;
+  color: #ff6b6b;
+  margin-bottom: 20px;
+}
+
+.sip-comparison {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.sip-card {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background-color: #1e1e1e;
+  text-align: center;
+}
+
+.sip-card h3 {
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.sip-card p {
+  margin: 8px 0;
+  color: #cccccc;
+}

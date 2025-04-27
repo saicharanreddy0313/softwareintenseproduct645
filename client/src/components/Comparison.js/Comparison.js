@@ -5,17 +5,17 @@ import '../../styles/Comparison.css';
 const Comparison = () => {
   const [searchTerm1, setSearchTerm1] = useState('');
   const [searchTerm2, setSearchTerm2] = useState('');
-  const [, setResults1] = useState([]);
-  const [, setResults2] = useState([]);
+  const [results1, setResults1] = useState([]);
+  const [results2, setResults2] = useState([]);
   const [selectedSIP1, setSelectedSIP1] = useState(null);
   const [selectedSIP2, setSelectedSIP2] = useState(null);
-  const [loading1, setLoading1] = useState(false);
-  const [loading2, setLoading2] = useState(false);
+  const [, setLoading1] = useState(false);
+  const [, setLoading2] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch1 = async () => {
-    if (!searchTerm1.trim()) {
-      setError('Please enter search term for SIP 1');
+  const fetchSuggestions1 = async (query) => {
+    if (!query.trim()) {
+      setResults1([]);
       return;
     }
     try {
@@ -23,25 +23,21 @@ const Comparison = () => {
       const { data, error } = await supabase
         .from('Cars')
         .select('Id, name, category, manufacturer, versions, operatingSystems')
-        .or(`name.ilike.%${searchTerm1}%,category.ilike.%${searchTerm1}%,manufacturer.ilike.%${searchTerm1}%,operatingSystems.ilike.%${searchTerm1}%`);
+        .or(`name.ilike.%${query}%,category.ilike.%${query}%,manufacturer.ilike.%${query}%,operatingSystems.ilike.%${query}%`)
+        .limit(5);
       if (error) throw error;
       setResults1(data || []);
-      if (data && data.length > 0) {
-        setSelectedSIP1(data[0]); // 🛠 Automatically select first result
-      } else {
-        setSelectedSIP1(null);
-      }
     } catch (err) {
-      console.error('Error searching SIP 1:', err.message);
-      setError('Error searching SIP 1');
+      console.error('Error fetching suggestions 1:', err.message);
+      setError('Error fetching suggestions for SIP 1');
     } finally {
       setLoading1(false);
     }
   };
 
-  const handleSearch2 = async () => {
-    if (!searchTerm2.trim()) {
-      setError('Please enter search term for SIP 2');
+  const fetchSuggestions2 = async (query) => {
+    if (!query.trim()) {
+      setResults2([]);
       return;
     }
     try {
@@ -49,20 +45,28 @@ const Comparison = () => {
       const { data, error } = await supabase
         .from('Cars')
         .select('Id, name, category, manufacturer, versions, operatingSystems')
-        .or(`name.ilike.%${searchTerm2}%,category.ilike.%${searchTerm2}%,manufacturer.ilike.%${searchTerm2}%,operatingSystems.ilike.%${searchTerm2}%`);
+        .or(`name.ilike.%${query}%,category.ilike.%${query}%,manufacturer.ilike.%${query}%,operatingSystems.ilike.%${query}%`)
+        .limit(5);
       if (error) throw error;
       setResults2(data || []);
-      if (data && data.length > 0) {
-        setSelectedSIP2(data[0]); // 🛠 Automatically select first result
-      } else {
-        setSelectedSIP2(null);
-      }
     } catch (err) {
-      console.error('Error searching SIP 2:', err.message);
-      setError('Error searching SIP 2');
+      console.error('Error fetching suggestions 2:', err.message);
+      setError('Error fetching suggestions for SIP 2');
     } finally {
       setLoading2(false);
     }
+  };
+
+  const handleSelect1 = (sip) => {
+    setSelectedSIP1(sip);
+    setSearchTerm1(sip.name);
+    setResults1([]);
+  };
+
+  const handleSelect2 = (sip) => {
+    setSelectedSIP2(sip);
+    setSearchTerm2(sip.name);
+    setResults2([]);
   };
 
   return (
@@ -74,26 +78,42 @@ const Comparison = () => {
           <input
             type="text"
             value={searchTerm1}
-            onChange={(e) => setSearchTerm1(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm1(e.target.value);
+              fetchSuggestions1(e.target.value);
+            }}
             placeholder="Search SIP 1..."
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch1()}
           />
-          <button onClick={handleSearch1} disabled={loading1}>
-            {loading1 ? 'Searching...' : 'Search'}
-          </button>
+          {results1.length > 0 && (
+            <ul className="suggestions-list">
+              {results1.map((sip) => (
+                <li key={sip.Id} onClick={() => handleSelect1(sip)}>
+                  {sip.name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="search-input-group">
           <input
             type="text"
             value={searchTerm2}
-            onChange={(e) => setSearchTerm2(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm2(e.target.value);
+              fetchSuggestions2(e.target.value);
+            }}
             placeholder="Search SIP 2..."
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch2()}
           />
-          <button onClick={handleSearch2} disabled={loading2}>
-            {loading2 ? 'Searching...' : 'Search'}
-          </button>
+          {results2.length > 0 && (
+            <ul className="suggestions-list">
+              {results2.map((sip) => (
+                <li key={sip.Id} onClick={() => handleSelect2(sip)}>
+                  {sip.name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
