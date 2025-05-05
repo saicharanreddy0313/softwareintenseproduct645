@@ -8,7 +8,8 @@ import Signup from './pages/Signup/Signup';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import Profile from './pages/Profile/Profile';
 import Comparison from './components/Comparison.js/Comparison';
-import Starred from './components/Starred/Starred'; // ✅ Added this line
+import Starred from './components/Starred/Starred';
+import CategoryPage from './pages/Category/[category]'; // ✅ Added category route import
 import './styles/globals.css';
 
 function App() {
@@ -20,10 +21,11 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
-          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/comparison" element={<PrivateRoute><Comparison /></PrivateRoute>} />
-          <Route path="/starred" element={<PrivateRoute><Starred /></PrivateRoute>} /> {/* ✅ Added this line */}
+          <Route path="/starred" element={<PrivateRoute><Starred /></PrivateRoute>} />
+          <Route path="/category/:category" element={<PrivateRoute><CategoryPage /></PrivateRoute>} /> {/* ✅ New category route */}
+          <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </AuthProvider>
     </Router>

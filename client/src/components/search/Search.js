@@ -18,7 +18,7 @@ const Search = () => {
 
     try {
       const { data, error } = await supabase
-        .from('Cars')
+        .from('products')
         .select('name')
         .ilike('name', `%${value}%`)
         .limit(10);
@@ -37,13 +37,18 @@ const Search = () => {
     setError('');
     try {
       const { data, error: sbError } = await supabase
-        .from('Cars')
-        .select('Id, name, category, manufacturer, versions, operatingSystems')
+        .from('products')
+        .select(`
+          id, name, Category, manufacturer, Versions, operating_systems, price,
+          product_launch_year, firmware_stack, connectivity_options, hardware_specifications,
+          supports_ota, software_components_used, power_specs, linked_dependencies,
+          certifications_met, official_site, external_reviews, available_markets
+        `)
         .or(
           `name.ilike.%${term}%,` +
-          `category.ilike.%${term}%,` +
+          `Category.ilike.%${term}%,` +
           `manufacturer.ilike.%${term}%,` +
-          `operatingSystems.ilike.%${term}%`
+          `operating_systems.ilike.%${term}%`
         );
 
       if (sbError) throw sbError;
@@ -76,10 +81,9 @@ const Search = () => {
     }
   };
 
-  // ⭐ NEW: handleStar function to save into localStorage
   const handleStar = (sip) => {
     const stored = JSON.parse(localStorage.getItem('starredSIPs')) || [];
-    const exists = stored.find(item => item.Id === sip.Id);
+    const exists = stored.find(item => item.id === sip.id);
     if (!exists) {
       const updated = [...stored, sip];
       localStorage.setItem('starredSIPs', JSON.stringify(updated));
@@ -99,7 +103,7 @@ const Search = () => {
           onKeyPress={handleKeyPress}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-          placeholder="Search products (e.g., 'Toyota' or 'Honda')"
+          placeholder="Search products (e.g., 'Tesla' or 'Fitbit')"
         />
         <button onClick={() => handleSearch(searchTerm)} disabled={loading}>
           {loading ? 'Searching...' : 'Search'}
@@ -120,17 +124,29 @@ const Search = () => {
 
       <div className="results-grid">
         {results.map((product) => (
-          <div key={product.Id} className="product-card">
+          <div key={product.id} className="product-card">
             <div className="card-header">
               <h3>{product.name}</h3>
-              {/* ⭐ Star button */}
               <button className="star-btn" onClick={() => handleStar(product)}>⭐</button>
             </div>
             <div className="product-meta">
-              <span className="category">Category: {product.category}</span>
-              <span className="manufacturer">Manufacturer: {product.manufacturer}</span>
-              <span className="version">Version: {product.versions}</span>
-              <span className="os">OS: {product.operatingSystems}</span>
+              <span><strong>Category:</strong> {product.Category}</span>
+              <span><strong>Manufacturer:</strong> {product.manufacturer}</span>
+              <span><strong>Version:</strong> {product.Versions}</span>
+              <span><strong>OS:</strong> {product.operating_systems}</span>
+              <span><strong>Price:</strong> ${product.price}</span>
+              <span><strong>Year:</strong> {product.product_launch_year}</span>
+              <span><strong>Firmware:</strong> {product.firmware_stack}</span>
+              <span><strong>Connectivity:</strong> {product.connectivity_options}</span>
+              <span><strong>Specs:</strong> {product.hardware_specifications}</span>
+              <span><strong>OTA:</strong> {product.supports_ota ? 'Yes' : 'No'}</span>
+              <span><strong>Software:</strong> {product.software_components_used}</span>
+              <span><strong>Power:</strong> {product.power_specs}</span>
+              <span><strong>Dependencies:</strong> {product.linked_dependencies}</span>
+              <span><strong>Certifications:</strong> {product.certifications_met}</span>
+              <span><strong>Markets:</strong> {product.available_markets}</span>
+              <span><a href={product.official_site} target="_blank" rel="noreferrer">Official Site</a></span>
+              <span><a href={product.external_reviews} target="_blank" rel="noreferrer">Review</a></span>
             </div>
           </div>
         ))}

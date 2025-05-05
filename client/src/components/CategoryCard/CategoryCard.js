@@ -5,7 +5,7 @@ import '../../styles/CategoryCard.css';
 const CategoryCard = ({ category }) => {
   return (
     <Link 
-      to={`/search?category=${category.name}`} 
+      to={`/category/${category.name}`} 
       className="category-card"
     >
       <div 
