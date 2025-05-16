@@ -51,6 +51,8 @@ const Search = () => {
           `operating_systems.ilike.%${term}%`
         );
 
+        
+
       if (sbError) throw sbError;
       setResults(data || []);
       setSuggestions([]);
